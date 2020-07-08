@@ -40,7 +40,7 @@ public class PostDetailActivity extends AppCompatActivity {
         Log.i("PostDetails", "onCreate: " + post.getDescription());
         ParseUser user_of_post = post.getUser();
 
-        tvCreatedAt.setText(post.getRelativeTimeAgo(post.getCreatedAt().toString()));
+        tvCreatedAt.setText(post.getRelativeTimeAgo());
         tvDescription.setText(post.getDescription());
         tvUserAuthor.setText(post.getUser().getUsername());
 
@@ -53,7 +53,7 @@ public class PostDetailActivity extends AppCompatActivity {
         ParseFile profile_pic = post.getUser().getParseFile(USER_PROFILE_IMG);
 
         if (profile_pic != null) {
-            Glide.with(this).load(profile_pic.getUrl()).into(ivProfilePic);
+            Glide.with(this).load(profile_pic.getUrl()).circleCrop().into(ivProfilePic);
         }
 
     }

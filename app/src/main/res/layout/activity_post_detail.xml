@@ -7,50 +7,60 @@
     android:orientation="vertical"
     tools:context=".PostDetailActivity">
 
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+
+        <ImageView
+            android:id="@+id/ivProfilePic"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginBottom="2dp"
+            android:cropToPadding="false"
+            android:padding="10dp"
+            tools:srcCompat="@tools:sample/avatars" />
 
         <TextView
             android:id="@+id/tvUserAuthor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="false"
             android:layout_centerVertical="true"
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="25dp"
+            android:layout_toEndOf="@+id/ivProfilePic"
+            android:textColor="#000000"
+            android:textSize="18sp"
             tools:text="username" />
-
-        <ImageView
-            android:id="@+id/ivProfilePic"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_toEndOf="@+id/tvUserAuthor"
-            tools:srcCompat="@tools:sample/avatars" />
-
 
     </RelativeLayout>
 
     <ImageView
         android:id="@+id/ivPostPicture"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_margin="8dp"
-        tools:srcCompat="@tools:sample/avatars" />
-
-    <TextView
-        android:id="@+id/tvCreatedAt"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:text="Created At Time" />
+        android:layout_height="300dp"
+        android:layout_margin="0dp"
+        android:scaleType="centerCrop"
+        tools:srcCompat="@tools:sample/avatars"/>
 
     <TextView
         android:id="@+id/tvPostDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textColor="#000000"
+        android:textSize="18sp"
         tools:text="Description of posts" />
+
+    <TextView
+        android:id="@+id/tvCreatedAt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="10dp"
+        android:textColor="#000000"
+        tools:text="time created at" />
 
 </LinearLayout>

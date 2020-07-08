@@ -12,12 +12,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.parse.ParseFile;
 
 import java.util.List;
 
+import fragments.ProfileFragment;
+
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> {
 
+    public static final int ROUNDED_RADIUS = 80;
     private Context context;
     private List<Post> posts;
 
@@ -51,7 +55,10 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tvUsername;
         private TextView tvDescription;
+        private TextView tvCreated;
         private ImageView ivPostPic;
+        private ImageView ivProfilePostPic;
+
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -59,20 +66,33 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             tvUsername = itemView.findViewById(R.id.tvUser);
             tvDescription = itemView.findViewById(R.id.tvPostDescription);
             ivPostPic = itemView.findViewById(R.id.ivPostPic);
+            ivProfilePostPic = itemView.findViewById(R.id.ivProfilePostPic);
+            tvCreated = itemView.findViewById(R.id.tvCreatedAt);
+
         }
 
         public void bind(Post post) {
 
             tvDescription.setText(post.getDescription());
             tvUsername.setText(post.getUser().getUsername());
-
+            tvCreated.setText(post.getRelativeTimeAgo());
             ParseFile image = post.getImage();
 
             if (image != null) {
-                Glide.with(context).load(image.getUrl()).into(ivPostPic);
+                Glide.with(context).load(image.getUrl()).transform(new RoundedCorners(ROUNDED_RADIUS)).into(ivPostPic);
             } else {
-                ivPostPic.setVisibility(View.INVISIBLE);
+                ivPostPic.setVisibility(View.GONE);
             }
+
+            image = post.getUser().getParseFile(ProfileFragment.KEY_PROFILE_IMG);
+
+            if (image != null) {
+                Glide.with(context).load(image.getUrl()).circleCrop().into(ivProfilePostPic);
+            } else {
+                ivPostPic.setVisibility(View.GONE);
+            }
+
+
 
             ivPostPic.setOnClickListener(new View.OnClickListener() {
                 @Override

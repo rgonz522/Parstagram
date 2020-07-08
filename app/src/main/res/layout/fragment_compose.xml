@@ -6,27 +6,36 @@
     android:orientation="vertical">
 
 
-    <EditText
-        android:id="@+id/etDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <Button
-        android:id="@+id/btnCaptureImage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TAKE PICTURE" />
-
     <ImageView
         android:id="@+id/ivPostImage"
         android:layout_width="match_parent"
         android:layout_height="200dp"
+        android:padding="30dp"
         tools:srcCompat="@tools:sample/avatars" />
 
     <Button
-        android:id="@+id/btnSubmit"
+        android:id="@+id/btnCaptureImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:background="#ECB6B6"
+        android:padding="20dp"
+        android:text="TAKE PICTURE" />
+
+    <EditText
+        android:id="@+id/etDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="Enter Your Caption"
+        android:padding="20dp" />
+
+    <Button
+        android:id="@+id/btnSubmit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="#ECB6B6"
         android:text="SUBMIT" />
 
 </LinearLayout>

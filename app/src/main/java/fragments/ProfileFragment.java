@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.parstagram.LogInActivity;
 import com.example.parstagram.Post;
 import com.example.parstagram.R;
@@ -28,7 +29,7 @@ import java.util.List;
 public class ProfileFragment extends PostsFragment {
 
     private static final String TAG = "ProfileFragment";
-
+    public static final String KEY_PROFILE_IMG = "profile_pic";
 
     private ParseUser profileUser;
     private ImageView ivProfilePic;
@@ -52,7 +53,6 @@ public class ProfileFragment extends PostsFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
 
     }
@@ -100,12 +100,12 @@ public class ProfileFragment extends PostsFragment {
 
         tvUserName.setText(profileUser.getUsername());
 
-        ParseFile profile_pic = profileUser.getParseFile("profile_pic");
+        ParseFile profile_pic = profileUser.getParseFile(KEY_PROFILE_IMG);
         String img_url = profile_pic.getUrl();
 
         if (img_url != null) {
-            Log.i(TAG, "onViewCreated: " + "gliding profile pic into profile");
-            Glide.with(getContext()).load(img_url).into(ivProfilePic);
+
+            Glide.with(getContext()).load(img_url).circleCrop().into(ivProfilePic);
         }
 
 

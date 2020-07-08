@@ -32,6 +32,7 @@ public class PostsFragment extends Fragment {
     private static final String TAG = "PostsFragment";
     public static final int POSTS_PER_PAGE = 10;
     public static final int TOP_OF_PAGE = 0;
+    public static final int ROUNDED_RADIUS = 80;
 
     protected RecyclerView rvposts;
     protected PostsAdapter adapter;

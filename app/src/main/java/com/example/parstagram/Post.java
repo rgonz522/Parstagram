@@ -45,7 +45,8 @@ public class Post extends ParseObject {
 
 
     // getRelativeTimeAgo("Mon Apr 01 21:16:23 +0000 2014");
-    public static String getRelativeTimeAgo(String rawDate) {
+    public String getRelativeTimeAgo() {
+        String rawDate = getCreatedAt().toString();
         String postFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
         SimpleDateFormat sf = new SimpleDateFormat(postFormat, Locale.ENGLISH);
         sf.setLenient(true);
