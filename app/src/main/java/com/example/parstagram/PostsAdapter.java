@@ -77,7 +77,10 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
            if (image != null )
            {
                Glide.with(context).load(image.getUrl()).into(ivPostPic);
-           }
+           } else
+               {
+                   ivPostPic.setVisibility(View.GONE);
+               }
         }
     }
 }

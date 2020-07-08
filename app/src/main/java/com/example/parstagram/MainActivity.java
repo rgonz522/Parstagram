@@ -36,6 +36,7 @@ import java.util.List;
 
 import fragments.ComposeFragment;
 import fragments.PostsFragment;
+import fragments.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,41 +44,36 @@ public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
 
-   FragmentManager fragmentManager;
 
 
-    
+    FragmentManager fragmentManager;
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-       fragmentManager = getSupportFragmentManager();
-       bottomNavigationView = findViewById(R.id.bottom_navigation);
+        fragmentManager = getSupportFragmentManager();
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
 
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener()
-        {
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-               final Fragment fragment;
-                switch (menuItem.getItemId())
-                {
+                final Fragment fragment;
+                switch (menuItem.getItemId()) {
                     case R.id.action_profile:
-                       // fragment = fragment1;
-                        fragment = new ComposeFragment();
-                        Toast.makeText(MainActivity.this, R.id.action_profile + "", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.action_home:
-                        //fragment = fragment2;
-                        Toast.makeText(MainActivity.this, "PostFragment", Toast.LENGTH_SHORT).show();
-                        fragment = new PostsFragment();
+
+                        fragment = new ProfileFragment(ParseUser.getCurrentUser(), true);
                         break;
                     case R.id.action_compose:
-                        //fragment = fragment3;
-                        Toast.makeText(MainActivity.this, R.id.action_compose + "", Toast.LENGTH_SHORT).show();
+
                         fragment = new ComposeFragment();
+                        break;
+                    case R.id.action_home:
+
+                        fragment = new PostsFragment();
                         break;
                     default:
                         fragment = null;
@@ -92,4 +88,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public void loggedOut()
+    {
+        finish();
+    }
 }

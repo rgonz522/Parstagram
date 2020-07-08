@@ -12,7 +12,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
+import com.example.parstagram.EndlessRecyclerViewScrollListener;
 import com.example.parstagram.Post;
 import com.example.parstagram.PostsAdapter;
 import com.example.parstagram.R;
@@ -32,9 +34,11 @@ import java.util.List;
 public class PostsFragment extends Fragment {
 
     private static final String TAG = "PostsFragment" ;
-    private RecyclerView rvposts;
-    private PostsAdapter adapter;
-    private List<Post> posts;
+    protected RecyclerView rvposts;
+    protected PostsAdapter adapter;
+    protected List<Post> allposts;
+    private EndlessRecyclerViewScrollListener scrollListener;
+
 
     public static PostsFragment newInstance(String param1, String param2) {
         PostsFragment fragment = new PostsFragment();
@@ -67,21 +71,42 @@ public class PostsFragment extends Fragment {
     {
         super.onViewCreated(view, savedInstanceState);
 
-        posts = new ArrayList<>();
+        allposts = new ArrayList<>();
 
         rvposts = view.findViewById(R.id.rvPosts);
-        adapter = new PostsAdapter(getContext(), posts );
+        adapter = new PostsAdapter(getContext(), allposts);
 
         rvposts.setAdapter(adapter);
-        rvposts.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        LinearLayoutManager linearLayoutman = new LinearLayoutManager(getContext());
+
+        rvposts.setLayoutManager(linearLayoutman);
+
+
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutman) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                queryPosts();
+            }
+        };
+        // Adds the scroll listener to RecyclerView
+        rvposts.addOnScrollListener(scrollListener);
+
+
         queryPosts();
 
     }
 
-    private void queryPosts()
+
+
+    protected void queryPosts()
     {
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_USER);
+        query.setLimit(20);
+        query.addDescendingOrder(Post.KEY_CREATEDAT);
         query.findInBackground(new FindCallback<Post>()
         {
             @Override
@@ -95,6 +120,8 @@ public class PostsFragment extends Fragment {
                 {
                     Log.i(TAG, "post: " + post.getDescription() + " " + post.getUser().getUsername());
                 }
+                allposts.addAll(posts);
+                adapter.notifyDataSetChanged();
             }
         });
     }
