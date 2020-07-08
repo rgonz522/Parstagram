@@ -38,4 +38,11 @@
         android:background="#ECB6B6"
         android:text="SUBMIT" />
 
+
+    <ProgressBar
+        android:id="@+id/pbLoading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible" />
 </LinearLayout>

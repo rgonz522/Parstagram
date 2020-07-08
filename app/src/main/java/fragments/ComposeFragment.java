@@ -20,9 +20,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 
+import com.bumptech.glide.Glide;
+import com.example.parstagram.MainActivity;
 import com.example.parstagram.Post;
 import com.example.parstagram.R;
 
@@ -46,7 +49,7 @@ public class ComposeFragment extends Fragment {
     private Button btnCaptureImage;
     private Button btnSubmitImage;
     private ImageView ivPostImage;
-
+    private ProgressBar pbLoading;
 
     public final String APP_TAG = "MyCustomApp";
     public final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1034;
@@ -87,8 +90,7 @@ public class ComposeFragment extends Fragment {
         btnCaptureImage = view.findViewById(R.id.btnCaptureImage);
         btnSubmitImage = view.findViewById(R.id.btnSubmit);
         ivPostImage = view.findViewById(R.id.ivPostImage);
-
-
+         pbLoading = view.findViewById(R.id.pbLoading);
         btnSubmitImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -103,7 +105,7 @@ public class ComposeFragment extends Fragment {
                     Toast.makeText(getContext(), "No Picture Uploaded", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
+                pbLoading.setVisibility(ProgressBar.VISIBLE);
                 ParseUser currentUser = ParseUser.getCurrentUser();
                 savePost(description, currentUser, photoFile);
 
@@ -182,7 +184,12 @@ public class ComposeFragment extends Fragment {
                     return;
                 }
                 etDescription.setText("");
+                Glide.with(getContext()).clear(ivPostImage);
+                pbLoading.setVisibility(ProgressBar.INVISIBLE);
 
+                //after posting go to MainActivity
+                Intent intent = new Intent(getContext(), MainActivity.class);
+                startActivity(intent);
             }
         });
 
