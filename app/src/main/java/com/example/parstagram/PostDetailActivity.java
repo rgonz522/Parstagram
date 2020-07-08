@@ -40,7 +40,7 @@ public class PostDetailActivity extends AppCompatActivity {
         Log.i("PostDetails", "onCreate: " + post.getDescription());
         ParseUser user_of_post = post.getUser();
 
-        tvCreatedAt.setText(post.getCreatedAt().toString());
+        tvCreatedAt.setText(post.getRelativeTimeAgo(post.getCreatedAt().toString()));
         tvDescription.setText(post.getDescription());
         tvUserAuthor.setText(post.getUser().getUsername());
 
