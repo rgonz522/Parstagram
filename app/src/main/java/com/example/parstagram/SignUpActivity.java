@@ -24,8 +24,7 @@ public class SignUpActivity extends AppCompatActivity {
     private Button btnSubmit;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
@@ -35,54 +34,47 @@ public class SignUpActivity extends AppCompatActivity {
         btnSubmit = findViewById(R.id.btnSubmit);
 
 
-
-        btnSubmit.setOnClickListener(new View.OnClickListener()
-        {
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 final String name = etName.getText().toString();
                 String email = etEmail.getText().toString();
                 final String password = etpassword.getText().toString();
 
-                if(!name.isEmpty() && !email.isEmpty() && !password.isEmpty())
-                {
-                // Create the ParseUser
-                ParseUser user = new ParseUser();
-                // Set core properties
-                user.setUsername(name);
-                user.setPassword(password);
-                user.setEmail(email);
-                // Invoke signUpInBackground
-                user.signUpInBackground(new SignUpCallback()
-                {
-                    public void done(ParseException e)
-                    {
-                        if (e == null)
-                        {
-                           goMainActivity(name, password);
-                        } else {
-                            Log.e("SignUpActivity", "issues with signing up", e );
-                        }
+                if (!name.isEmpty() && !email.isEmpty() && !password.isEmpty()) {
+                    // Create the ParseUser
+                    ParseUser user = new ParseUser();
+                    // Set core properties
+                    user.setUsername(name);
+                    user.setPassword(password);
+                    user.setEmail(email);
+                    // Invoke signUpInBackground
+                    user.signUpInBackground(new SignUpCallback() {
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                goMainActivity(name, password);
+                            } else {
+                                Log.e("SignUpActivity", "issues with signing up", e);
+                                Toast.makeText(SignUpActivity.this, "Username already taken", Toast.LENGTH_SHORT).show();
+                            }
 
-                    }
-                });
+                        }
+                    });
+                } else {
+                    Toast.makeText(SignUpActivity.this, "Fill out all fields", Toast.LENGTH_SHORT).show();
                 }
+
             }
 
 
-
-
         });
-}
-    private void goMainActivity(String username, String password)
-    {
-        Log.i("SignUpActivty", "loginUser: Attempting to Login" + username);
-        ParseUser.logInInBackground(username, password, new LogInCallback()
-        {
+    }
+
+    private void goMainActivity(String username, String password) {
+
+        ParseUser.logInInBackground(username, password, new LogInCallback() {
             @Override
-            public void done(ParseUser user, ParseException e)
-            {
+            public void done(ParseUser user, ParseException e) {
                 if (e != null) {
                     //TODO : better error handling and ui
                     Log.e("SignUpActivity", "issue with login: ", e);

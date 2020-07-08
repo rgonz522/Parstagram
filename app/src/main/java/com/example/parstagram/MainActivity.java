@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
 
 
-
     FragmentManager fragmentManager;
 
 
@@ -65,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (menuItem.getItemId()) {
                     case R.id.action_profile:
 
-                        fragment = new ProfileFragment(ParseUser.getCurrentUser(), true);
+                        fragment = new ProfileFragment(true);
                         break;
                     case R.id.action_compose:
 
@@ -88,8 +87,4 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void loggedOut()
-    {
-        finish();
-    }
 }

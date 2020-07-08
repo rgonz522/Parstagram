@@ -25,11 +25,10 @@ import com.parse.ParseUser;
 
 import java.util.List;
 
-public class ProfileFragment extends PostsFragment
-{
+public class ProfileFragment extends PostsFragment {
 
-    private static final String TAG = "ProfileFragment" ;
-    private static final String KEY_USER = "user" ;
+    private static final String TAG = "ProfileFragment";
+
 
     private ParseUser profileUser;
     private ImageView ivProfilePic;
@@ -38,9 +37,15 @@ public class ProfileFragment extends PostsFragment
     private boolean currentUser;
 
 
-    public ProfileFragment(ParseUser profileUser, boolean currentUser)
-    {
+    public ProfileFragment(ParseUser profileUser, boolean currentUser) {
         this.profileUser = profileUser;
+        this.currentUser = currentUser;
+    }
+
+
+    public ProfileFragment(boolean currentUser) {
+
+        profileUser = ParseUser.getCurrentUser();
         this.currentUser = currentUser;
     }
 
@@ -49,9 +54,9 @@ public class ProfileFragment extends PostsFragment
         super.onCreate(savedInstanceState);
 
 
-        profileUser = ParseUser.getCurrentUser();
 
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -61,30 +66,26 @@ public class ProfileFragment extends PostsFragment
 
     }
 
-    protected void queryPosts()
-    {
+    protected void queryPosts(int page) {
+
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_USER);
-        query.whereEqualTo(Post.KEY_USER, ParseUser.getCurrentUser());
-        query.setLimit(20);
+        query.whereEqualTo(Post.KEY_USER, profileUser);
+        query.setLimit(POSTS_PER_PAGE);
+        query.setSkip(page * POSTS_PER_PAGE);
         query.addDescendingOrder(Post.KEY_CREATEDAT);
-        query.findInBackground(new FindCallback<Post>()
-        {
+        query.findInBackground(new FindCallback<Post>() {
             @Override
-            public void done(List<Post> posts, ParseException e)
-            {
-                if(e != null)
-                {
-                    Log.e(TAG, "Issues getting posts", e );
-                }
-                for (Post post: posts)
-                {
-                    Log.i(TAG, "post: " + post.getDescription() + " " + post.getUser().getUsername());
+            public void done(List<Post> posts, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Issues getting posts", e);
+                    return;
                 }
                 allposts.addAll(posts);
                 adapter.notifyDataSetChanged();
             }
         });
+
     }
 
     @Override
@@ -97,19 +98,21 @@ public class ProfileFragment extends PostsFragment
         btnLogOut = view.findViewById(R.id.btnLogOut);
 
 
-       tvUserName.setText(profileUser.getUsername());
+        tvUserName.setText(profileUser.getUsername());
 
-        ParseFile profilepic = profileUser.getParseFile("profile_pic");
+        ParseFile profile_pic = profileUser.getParseFile("profile_pic");
+        String img_url = profile_pic.getUrl();
 
-        if (profilepic != null) Glide.with(getContext()).load(profilepic.getUrl()).into(ivProfilePic);
+        if (img_url != null) {
+            Log.i(TAG, "onViewCreated: " + "gliding profile pic into profile");
+            Glide.with(getContext()).load(img_url).into(ivProfilePic);
+        }
 
-        if(currentUser)
-        {
-            btnLogOut.setOnClickListener(new View.OnClickListener()
-            {
+
+        if (currentUser) {
+            btnLogOut.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view)
-                {
+                public void onClick(View view) {
                     ParseUser.logOut();
                     getActivity().finish();
                     Intent login_intent = new Intent(getContext(), LogInActivity.class);
@@ -119,7 +122,6 @@ public class ProfileFragment extends PostsFragment
         }
 
     }
-
 
 
 }
