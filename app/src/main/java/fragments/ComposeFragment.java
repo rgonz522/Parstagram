@@ -56,9 +56,7 @@ public class ComposeFragment extends Fragment {
     public String photoFileName = "photo.jpg";
     File photoFile;
 
-    public ComposeFragment() {
-        // Required empty public constructor
-    }
+
 
     public static ComposeFragment newInstance() {
         ComposeFragment fragment = new ComposeFragment();
