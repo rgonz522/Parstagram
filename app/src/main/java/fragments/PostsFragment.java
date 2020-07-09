@@ -5,7 +5,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -14,12 +13,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 
 import com.example.parstagram.EndlessRecyclerViewScrollListener;
-import com.example.parstagram.Post;
-import com.example.parstagram.PostsAdapter;
+import com.example.parstagram.models.Post;
+import com.example.parstagram.adapters.PostsAdapter;
 import com.example.parstagram.R;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -42,20 +40,21 @@ public class PostsFragment extends Fragment {
     protected EndlessRecyclerViewScrollListener scrollListener;
     protected SwipeRefreshLayout swipeContainer;
 
-    protected LinearLayoutManager layoutManager;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        layoutManager = new LinearLayoutManager(getContext());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+
         return inflater.inflate(R.layout.fragment_posts, container, false);
+
     }
 
     @Override
@@ -70,8 +69,10 @@ public class PostsFragment extends Fragment {
 
         rvposts.setAdapter(adapter);
 
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
 
-        rvposts.setLayoutManager(getLayoutManager());
+        rvposts.setLayoutManager(layoutManager);
+
 
 
         scrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
@@ -92,6 +93,7 @@ public class PostsFragment extends Fragment {
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
+                allposts.clear();
                 queryPosts(TOP_OF_PAGE);
             }
         });
@@ -102,7 +104,6 @@ public class PostsFragment extends Fragment {
                 android.R.color.holo_red_light);
 
 
-        Log.i(TAG, "onViewCreated: type of layout" + getLayoutManager().getClass());
         queryPosts(TOP_OF_PAGE);
         //so on original loading of the post fragment
         //home page can be populated
@@ -136,10 +137,7 @@ public class PostsFragment extends Fragment {
 
     }
 
-    protected LinearLayoutManager getLayoutManager(){
 
-        return layoutManager;
-    }
 
 
 }

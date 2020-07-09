@@ -1,5 +1,6 @@
 package fragments;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,22 +8,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.GridLayout;
+
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.activity.OnBackPressedCallback;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.example.parstagram.EndlessRecyclerViewScrollListener;
+import com.example.parstagram.adapters.GridPostsAdapter;
 import com.example.parstagram.LogInActivity;
-import com.example.parstagram.MainActivity;
-import com.example.parstagram.Post;
+
+import com.example.parstagram.models.Post;
 import com.example.parstagram.R;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -30,12 +36,23 @@ import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class ProfileFragment extends PostsFragment {
+public class ProfileFragment extends Fragment {
 
     private static final String TAG = "ProfileFragment";
     public static final String KEY_PROFILE_IMG = "profile_pic";
+
+
+
+    protected RecyclerView rvposts;
+    protected GridPostsAdapter adapter;
+    protected List<Post> allposts;
+    protected EndlessRecyclerViewScrollListener scrollListener;
+    protected SwipeRefreshLayout swipeContainer;
+
+
 
     private ParseUser profileUser;
     private ImageView ivProfilePic;
@@ -45,6 +62,10 @@ public class ProfileFragment extends PostsFragment {
 
 
 
+    public ProfileFragment()
+    {
+
+    }
 
     public ProfileFragment(ParseUser profileUser, boolean currentUser) {
         this.profileUser = profileUser;
@@ -63,7 +84,7 @@ public class ProfileFragment extends PostsFragment {
 
         profileUser = ParseUser.getCurrentUser();
         this.currentUser = currentUser;
-        layoutManager = new GridLayoutManager(getContext(), 3);
+
 
     }
 
@@ -85,11 +106,13 @@ public class ProfileFragment extends PostsFragment {
 
     protected void queryPosts(int page) {
 
+
+
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_USER);
         query.whereEqualTo(Post.KEY_USER, profileUser);
-        query.setLimit(POSTS_PER_PAGE);
-        query.setSkip(page * POSTS_PER_PAGE);
+        query.setLimit(PostsFragment.POSTS_PER_PAGE);
+        query.setSkip(page * PostsFragment.POSTS_PER_PAGE);
         query.addDescendingOrder(Post.KEY_CREATEDAT);
         query.findInBackground(new FindCallback<Post>() {
             @Override
@@ -108,6 +131,53 @@ public class ProfileFragment extends PostsFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+
+        allposts = new ArrayList<>();
+
+        rvposts = view.findViewById(R.id.rvPosts);
+        adapter = new GridPostsAdapter(getContext(), allposts);
+
+        rvposts.setAdapter(adapter);
+
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
+
+        rvposts.setLayoutManager(layoutManager);
+
+
+
+        scrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                // Triggered only when new data needs to be appended to the list
+                //starting from page
+                queryPosts(page);
+            }
+        };
+        rvposts.addOnScrollListener(scrollListener);
+
+        swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+                allposts.clear();
+                queryPosts(PostsFragment.TOP_OF_PAGE);
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
+
+        queryPosts(PostsFragment.TOP_OF_PAGE);
+        //so on original loading of the post fragment
+        //home page can be populated
 
 
         tvUserName = view.findViewById(R.id.tvUsername);
@@ -153,6 +223,8 @@ public class ProfileFragment extends PostsFragment {
 
 
     }
+
+
 
     public void startUserProfileFragment(){
 

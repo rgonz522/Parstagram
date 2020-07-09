@@ -1,4 +1,4 @@
-package com.example.parstagram;
+package com.example.parstagram.models;
 
 import android.text.format.DateUtils;
 
@@ -21,6 +21,7 @@ public class Post extends ParseObject {
 
     public String getDescription() {
         return getString(KEY_DESCRIPTION);
+
     }
 
     public void setDescription(String description) {
