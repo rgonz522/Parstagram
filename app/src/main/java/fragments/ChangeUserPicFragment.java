@@ -1,47 +1,72 @@
 package fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
+import com.bumptech.glide.Glide;
+import com.example.parstagram.MainActivity;
+import com.example.parstagram.Post;
 import com.example.parstagram.R;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ChangeUserPicFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.io.File;
+
+
 public class ChangeUserPicFragment extends ComposeFragment {
 
+    private static final String TAG = "ChangeUserPicFragment";
 
-
-    public ChangeUserPicFragment() {
-        // Required empty public constructor
-    }
-
-
-    // TODO: Rename and change types and number of parameters
-    public static ChangeUserPicFragment newInstance() {
-        ChangeUserPicFragment fragment = new ChangeUserPicFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
     }
 
+
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_change_user_pic, container, false);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        etDescription.setText(" ");
+        etDescription.setVisibility(View.INVISIBLE);
+        //Compose Fragment's Description not needed.
+    }
+
+
+    @Override
+    protected void savePost(String description, ParseUser currentUser, File photoFile) {
+        currentUser.put("profile_pic", new ParseFile(photoFile));
+
+        currentUser.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Issues  changing profile pic ", e);
+                    return;
+                }
+                Glide.with(getContext()).clear(ivPostImage);
+                pbLoading.setVisibility(ProgressBar.INVISIBLE);
+                //after posting go to MainActivity
+                Intent intent = new Intent(getContext(), MainActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }

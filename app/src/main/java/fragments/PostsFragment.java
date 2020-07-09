@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 
 import com.example.parstagram.EndlessRecyclerViewScrollListener;
@@ -32,7 +34,7 @@ public class PostsFragment extends Fragment {
     private static final String TAG = "PostsFragment";
     public static final int POSTS_PER_PAGE = 10;
     public static final int TOP_OF_PAGE = 0;
-    public static final int ROUNDED_RADIUS = 80;
+
 
     protected RecyclerView rvposts;
     protected PostsAdapter adapter;
@@ -40,17 +42,19 @@ public class PostsFragment extends Fragment {
     protected EndlessRecyclerViewScrollListener scrollListener;
     protected SwipeRefreshLayout swipeContainer;
 
+    protected LinearLayoutManager layoutManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        layoutManager = new LinearLayoutManager(getContext());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.fragment_posts, container, false);
     }
 
@@ -66,13 +70,11 @@ public class PostsFragment extends Fragment {
 
         rvposts.setAdapter(adapter);
 
-        //Linear to keep posts tightly wrapped together.
-        LinearLayoutManager linearLayoutman = new LinearLayoutManager(getContext());
 
-        rvposts.setLayoutManager(linearLayoutman);
+        rvposts.setLayoutManager(getLayoutManager());
 
 
-        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutman) {
+        scrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 // Triggered only when new data needs to be appended to the list
@@ -100,6 +102,7 @@ public class PostsFragment extends Fragment {
                 android.R.color.holo_red_light);
 
 
+        Log.i(TAG, "onViewCreated: type of layout" + getLayoutManager().getClass());
         queryPosts(TOP_OF_PAGE);
         //so on original loading of the post fragment
         //home page can be populated
@@ -132,4 +135,11 @@ public class PostsFragment extends Fragment {
 
 
     }
+
+    protected LinearLayoutManager getLayoutManager(){
+
+        return layoutManager;
+    }
+
+
 }

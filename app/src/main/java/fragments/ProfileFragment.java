@@ -7,15 +7,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.parstagram.LogInActivity;
+import com.example.parstagram.MainActivity;
 import com.example.parstagram.Post;
 import com.example.parstagram.R;
 import com.parse.FindCallback;
@@ -38,16 +44,27 @@ public class ProfileFragment extends PostsFragment {
     private boolean currentUser;
 
 
+
+
     public ProfileFragment(ParseUser profileUser, boolean currentUser) {
         this.profileUser = profileUser;
         this.currentUser = currentUser;
     }
 
+    public static ProfileFragment newInstance(ParseUser profileUser, boolean currentUser) {
+        ProfileFragment fragment = new ProfileFragment(profileUser, currentUser);
+        Bundle args = new Bundle();
+
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     public ProfileFragment(boolean currentUser) {
 
         profileUser = ParseUser.getCurrentUser();
         this.currentUser = currentUser;
+        layoutManager = new GridLayoutManager(getContext(), 3);
+
     }
 
     @Override
@@ -119,9 +136,31 @@ public class ProfileFragment extends PostsFragment {
                     startActivity(login_intent);
                 }
             });
+
+            ivProfilePic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    startUserProfileFragment();
+                }
+            });
+        } else
+            {
+              btnLogOut.setVisibility(View.INVISIBLE);
+
         }
+
+
 
     }
 
+    public void startUserProfileFragment(){
 
+        ChangeUserPicFragment changeUserPicFragment = new ChangeUserPicFragment();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.flContainer,changeUserPicFragment);
+        fragmentTransaction.commit();
+
+    }
 }
