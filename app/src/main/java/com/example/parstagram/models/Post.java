@@ -7,8 +7,10 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
 import java.util.Locale;
 
 
@@ -18,6 +20,7 @@ public class Post extends ParseObject {
     public static final String KEY_IMAGE = "image";
     public static final String KEY_USER = "user";
     public static final String KEY_CREATEDAT = "createdAt";
+
 
     public String getDescription() {
         return getString(KEY_DESCRIPTION);
@@ -43,7 +46,6 @@ public class Post extends ParseObject {
     public void setUser(ParseUser parseUser) {
         put(KEY_USER, parseUser);
     }
-
 
     // getRelativeTimeAgo("Mon Apr 01 21:16:23 +0000 2014");
     public String getRelativeTimeAgo() {

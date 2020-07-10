@@ -197,6 +197,7 @@ public class ComposeFragment extends Fragment {
                 Glide.with(getContext()).clear(ivPostImage);
                 pbLoading.setVisibility(ProgressBar.INVISIBLE);
 
+                btnSubmitImage.setOnClickListener(null);
                 //after posting go to MainActivity
                 Intent intent = new Intent(getContext(), MainActivity.class);
                 startActivity(intent);

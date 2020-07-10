@@ -4,14 +4,11 @@ import com.parse.ParseClassName;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
+@ParseClassName("Likes")
+public class Like extends ParseObject {
 
-@ParseClassName("Comment")
-public class Comment extends ParseObject {
-
-
-    public static final String KEY_MESSAGE = "Message";
-    public static final String KEY_USER = "User";
-    public static final String KEY_POST = "Post";
+    public static final String KEY_USER = "user";
+    public static final String KEY_POST = "post";
 
 
     public ParseUser getUser() {
@@ -30,14 +27,4 @@ public class Comment extends ParseObject {
     public void setPost(ParseObject parseObject) {
         put(KEY_POST, parseObject);
     }
-
-    public String getMessage() {
-        return getString(KEY_MESSAGE);
-    }
-
-    public void setMessage(String message) {
-        put(KEY_MESSAGE, message);
-    }
-
-
 }

@@ -4,16 +4,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.parstagram.adapters.CommentsAdapter;
-import com.example.parstagram.adapters.PostsAdapter;
 import com.example.parstagram.models.Comment;
 
+import com.example.parstagram.models.Like;
 import com.example.parstagram.models.Post;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -21,51 +26,79 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
+
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class PostDetailActivity extends AppCompatActivity {
 
     private TextView tvCreatedAt;
     private TextView tvUserAuthor;
     private TextView tvDescription;
+    private TextView tvAmtLikes;
+    private EditText etNewComment;
     private ImageView ivPostPic;
     private ImageView ivProfilePic;
+    private ImageView ivLike;
+    private Button btnSendCmt;
 
 
-
-    protected RecyclerView rvComments;
-    protected CommentsAdapter adapter;
-    protected List<Comment> allComments;
-    protected ParseObject parse_post;
-
+    private RecyclerView rvComments;
+    private CommentsAdapter adapter;
+    private List<Comment> allComments;
+    private ParseObject parse_post;
+    private ProgressBar pbLoading;
 
     public static final String USER_PROFILE_IMG = "profile_pic";
 
+    private boolean liked_by_current_user;
+    private int amt_of_likes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_detail);
 
+        Log.i("PostDe", "onCreate: ");
 
         tvCreatedAt = findViewById(R.id.tvCreatedAt);
         tvUserAuthor = findViewById(R.id.tvUserAuthor);
         tvDescription = findViewById(R.id.tvPostDescription);
+
         ivPostPic = findViewById(R.id.ivPostPicture);
         ivProfilePic = findViewById(R.id.ivProfilePic);
+
+        etNewComment = findViewById(R.id.etNewComment);
+        btnSendCmt = findViewById(R.id.btnSbmtCmt);
+
+        pbLoading = findViewById(R.id.pbLoadingCmt);
+        pbLoading.setVisibility(View.INVISIBLE);
+
+
+        ivLike = findViewById(R.id.ivLike);
+        tvAmtLikes = findViewById(R.id.tvAmtLikes);
 
 
         Post post = (Post) getIntent().getParcelableExtra(Post.class.getSimpleName());
         Log.i("PostDetails", "onCreate: " + post.getDescription());
         ParseUser user_of_post = post.getUser();
+        queryLikes();
 
         tvCreatedAt.setText(post.getRelativeTimeAgo());
         tvDescription.setText(post.getDescription());
         tvUserAuthor.setText(post.getUser().getUsername());
 
+        if (liked_by_current_user) {
+            Log.i("Pos", "onCreate: " + liked_by_current_user);
+            ivLike.setImageResource(R.drawable.ufi_heart_active);
+        } else {
+            ivLike.setImageResource(R.drawable.ufi_heart);
+        }
         parse_post = post;
+
 
         ParseFile image = post.getImage();
 
@@ -80,6 +113,18 @@ public class PostDetailActivity extends AppCompatActivity {
         }
 
 
+        btnSendCmt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String newcomment = etNewComment.getText().toString();
+                if (!newcomment.isEmpty()) {
+                    pbLoading.setVisibility(ProgressBar.VISIBLE);
+                    saveComment(newcomment, parse_post, ParseUser.getCurrentUser());
+                }
+
+            }
+        });
+
 
         allComments = new ArrayList<>();
 
@@ -92,11 +137,13 @@ public class PostDetailActivity extends AppCompatActivity {
 
         rvComments.setLayoutManager(layoutManager);
 
-        queryPosts();
+
+        queryComments();
+
 
     }
 
-    protected void queryPosts() {
+    private void queryComments() {
 
 
         ParseQuery<Comment> query = ParseQuery.getQuery(Comment.class);
@@ -112,8 +159,8 @@ public class PostDetailActivity extends AppCompatActivity {
                     Log.e("PostDetails", "Issues getting comments", e);
                 } else if (comments != null) {
 
+                    allComments.clear();
                     allComments.addAll(comments);
-
 
                     adapter.notifyDataSetChanged();
                 }
@@ -123,4 +170,75 @@ public class PostDetailActivity extends AppCompatActivity {
 
 
     }
+
+    private void saveComment(String newcomment, ParseObject currentpost, ParseUser currentUser) {
+        Comment comment = new Comment();
+
+        comment.setMessage(newcomment);
+        comment.setUser(currentUser);
+        comment.setPost(currentpost);
+
+        comment.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Log.e("PostDetails", "Issues  commenting ", e);
+                    return;
+                }
+                etNewComment.setText("");
+
+                pbLoading.setVisibility(ProgressBar.INVISIBLE);
+
+                queryComments();
+            }
+        });
+
+    }
+
+
+    private void queryLikes() {
+
+        amt_of_likes = 0;
+
+        ParseQuery<Like> query = ParseQuery.getQuery(Like.class);
+        query.include(Like.KEY_POST);
+        query.include(Like.KEY_USER);
+        Log.i("PostDetails", "queryLikes: " + parse_post.toString());
+        query.whereEqualTo(Like.KEY_POST, parse_post);
+
+
+        query.findInBackground(new FindCallback<Like>() {
+
+
+            @Override
+            public void done(List<Like> likes, ParseException e) {
+                if (e != null) {
+                    Log.e("PostDetails", "Issues getting likes", e);
+                    return;
+                } else if (likes != null) {
+                    amt_of_likes = likes.size();
+
+                    Log.i("PostDetails", "Likes: ### " + likes);
+                    for (Like like : likes) {
+
+                        Log.i("PostDetails", "like's user id" + like.getUser().getObjectId());
+                        Log.i("PostDetails", "current's user id" + ParseUser.getCurrentUser().getObjectId());
+                        if (like.getUser().getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
+
+                            liked_by_current_user = true;
+                            ivLike.setImageResource(R.drawable.ufi_heart_active);
+                        }
+
+                        tvAmtLikes.setText(amt_of_likes + "  likes");
+                    }
+                } else {
+                    return;
+                }
+
+            }
+        });
+
+    }
+
+
 }

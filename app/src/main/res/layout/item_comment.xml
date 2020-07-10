@@ -10,7 +10,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:gravity="right"
+        android:gravity="left"
         android:paddingEnd="8dp"
         android:textColor="#000000"
         tools:text="username" />
@@ -20,5 +20,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:gravity="left"
         tools:text="Message" />
 </LinearLayout>
