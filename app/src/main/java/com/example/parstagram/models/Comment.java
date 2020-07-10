@@ -1,13 +1,16 @@
 package com.example.parstagram.models;
 
+import com.parse.ParseClassName;
+
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
+@ParseClassName("Comment")
 public class Comment extends ParseObject {
 
 
-    public static final String KEY_MESSAGE = "description";
-    public static final String KEY_USER = "user";
+    public static final String KEY_MESSAGE = "Message";
+    public static final String KEY_USER = "User";
     public static final String KEY_CREATEDAT = "createdAt";
     public static final String KEY_POST = "Post";
 
