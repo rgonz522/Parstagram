@@ -188,14 +188,17 @@ public class ProfileFragment extends Fragment {
         tvUserName.setText(profileUser.getUsername());
 
         ParseFile profile_pic = profileUser.getParseFile(KEY_PROFILE_IMG);
-        String img_url = profile_pic.getUrl();
 
-        if (img_url != null) {
 
-            Glide.with(getContext()).load(img_url).circleCrop().into(ivProfilePic);
+        if (profile_pic != null) {
+            String img_url = profile_pic.getUrl();
+
+            if (img_url != null) {
+
+                Glide.with(getContext()).load(img_url).circleCrop().into(ivProfilePic);
+            }
+
         }
-
-
         if (currentUser) {
             btnLogOut.setOnClickListener(new View.OnClickListener() {
                 @Override
